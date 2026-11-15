@@ -1,0 +1,23 @@
+===============================================================================
+COMANDO SUPERIORE DELLE TRUPPE COLONIALI — QUARTIER GENERALE DI SAURIA
+DISPACCIO TELEGRAFICO CAMPALE & ORDINE DI MARCIA NOTTURNO
+SESSIONE OPERATIVA: sauria_operative
+===============================================================================
+
+DISPOSIZIONI OPERATIVE:
+Il Tenente Generale Oreste Baratieri ordina l'avanzata delle quattro brigate
+(Albertone, Arimondi, Dabormida, Ellena) verso le alture di Adua alle ore 21:00.
+
+SISTEMA TELEGRAFICO:
+I dispacci e gli ordini di marcia vengono elaborati dalla console campale attiva
+sulla rete interna del battaglione trasmissioni. Il sistema e protetto da un
+modulo di censura militare che blocca sequenze sovversive prima della formattazione.
+
+OBIETTIVO DI SICUREZZA:
+Analizzare il codice sorgente allegato della console (`app.py`), individuare la
+falla nel motore di elaborazione dei dispacci ed eludere il filtro di censura per
+intercettare gli ordini confidenziali dello Stato Maggiore.
+
+ACCESSO AL SERVIZIO:
+Collegarsi all'indirizzo della console telegrafica fornito dalla piattaforma.
+===============================================================================

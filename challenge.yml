@@ -1,0 +1,38 @@
+name: "Baratieri's War Council Console"
+author: "AdwaCTF"
+category: web
+description: |-
+  At Sauria forward camp, General Baratieri established a field dispatch
+  terminal to compose marching orders for the dawn assault.
+
+  The console is guarded by a vigilant military inspection filter that purges
+  suspicious input. Can you outsmart the Italian censor and take control of
+  the terminal?
+
+  Flag format: `AdwaCTF{...}`
+value: 1000
+type: dynamic
+flags:
+  - AdwaCTF{5571_b4r4713r1_0rd3r5_d15rup73d}
+tags:
+  - hard
+  - web
+  - ssti
+  - jinja2
+  - waf-bypass
+  - dynamic-flag
+files:
+  - output/app.py
+  - output/console_notice.txt
+generator:
+  enabled: true
+  image: "ghcr.io/azariyasmekonen/baratieri-war-console:latest"
+  output_filename: "app.py"
+  timeout: 30
+  cache_ttl: 72
+connection_info: "http://{host}:5001"
+hints:
+  - content: "Template engines offer native operators to stitch strings together before looking up object attributes dynamically."
+    cost: 45
+state: visible
+version: "0.2"

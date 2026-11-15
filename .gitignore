@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+flag.txt
+dist/
+solve/
+test_output/
+.env
