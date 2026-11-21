@@ -10,8 +10,7 @@ RUN pip install --no-cache-dir --no-index --find-links=/app/wheels flask && \
 COPY src/ /app/src/
 COPY entrypoint.sh /app/entrypoint.sh
 
-RUN chmod +x /app/entrypoint.sh && \
-    mkdir -p /output && chmod 777 /output
+RUN chmod +x /app/entrypoint.sh
 
 ENV PORT=5001
 

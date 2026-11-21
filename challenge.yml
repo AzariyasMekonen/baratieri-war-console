@@ -11,7 +11,7 @@ description: |-
 
   Flag format: `AdwaCTF{...}`
 value: 1000
-type: dynamic
+type: container
 flags:
   - AdwaCTF{5571_b4r4713r1_0rd3r5_d15rup73d}
 tags:
@@ -20,17 +20,15 @@ tags:
   - ssti
   - jinja2
   - waf-bypass
-  - dynamic-flag
+  - isolated-docker
 files:
-  - output/app.py
-  - output/console_notice.txt
-generator:
-  enabled: true
-  image: "ghcr.io/azariyasmekonen/baratieri-war-console:latest"
-  output_filename: "app.py"
-  timeout: 30
-  cache_ttl: 72
-connection_info: "http://{host}:5001"
+  - dist/app.py
+image: "ghcr.io/azariyasmekonen/baratieri-war-console:latest"
+docker_image: "ghcr.io/azariyasmekonen/baratieri-war-console:latest"
+instance_type: "isolated-docker"
+connection_type: "http"
+internal_port: 5001
+connection_info: "http://{host}:{port}"
 hints:
   - content: "Template engines offer native operators to stitch strings together before looking up object attributes dynamically."
     cost: 45

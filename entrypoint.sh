@@ -1,15 +1,13 @@
 #!/usr/bin/env bash
 set -e
 
-# Always plant dynamic flag and generate distribution files first
-python3 /app/src/generate.py
+FLAG_VAL="${CHALLENGE_FLAG:-${FLAG:-${ADWA_FLAG:-AdwaCTF{5571_b4r4713r1_0rd3r5_d15rup73d}}}}"
 
-# If running explicitly in generator mode (invoked by file generator driver via OUTPUT_PATH or arg)
-if [ -n "${OUTPUT_PATH:-}" ] || [ "${1:-}" = "generate" ] || [ "${MODE:-}" = "generator" ]; then
-    echo "[+] Generated files for challenge distribution. Exiting generator mode."
-    exit 0
-fi
+# Ensure flag is planted in standard server-side paths accessible by command execution
+echo "$FLAG_VAL" > /app/flag.txt 2>/dev/null || true
+echo "$FLAG_VAL" > /flag.txt 2>/dev/null || true
+echo "$FLAG_VAL" > /app/src/flag.txt 2>/dev/null || true
 
-# Otherwise start the live web service
-echo "[+] Starting Baratieri War Council Console on port ${PORT:-5001}..."
+PORT_VAL="${PORT:-5001}"
+echo "[+] Starting Baratieri War Council Console on port ${PORT_VAL}..."
 exec python3 /app/src/app.py
