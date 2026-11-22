@@ -1,7 +1,7 @@
-# Baratieri's War Council Console (የባራቲየሪ ድንብርብር)
+# ዋይ ዋይ
 
 **Category:** Web Exploitation  
-**Difficulty:** Hard (1000 points)  
+**Difficulty:** Hard (900 points)  
 **Historical Setting:** Italian Forward Encampment at Sauria — Night of 29 February 1896  
 
 ## Narrative Background

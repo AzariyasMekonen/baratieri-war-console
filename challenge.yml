@@ -1,4 +1,4 @@
-name: "Baratieri's War Council Console (የባራቲየሪ ድንብርብር)"
+name: "ዋይ ዋይ"
 author: "AdwaCTF"
 category: web
 description: |-
@@ -10,7 +10,7 @@ description: |-
   the terminal?
 
   Flag format: `AdwaCTF{...}`
-value: 1000
+value: 900
 type: container
 flags:
   - AdwaCTF{5571_b4r4713r1_0rd3r5_d15rup73d}
