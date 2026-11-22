@@ -7,7 +7,7 @@ app = Flask(__name__)
 BASE_DIR = Path(__file__).resolve().parent
 
 # Hardened Defense Layers:
-# Layer 1: Character level restrictions (no dots, underscores, brackets)
+# Layer 1: Character level restrictions
 BLOCKED_CHARS = [
     ".",   # Direct attribute access operator
     "_",   # Dunder / private attribute operator
@@ -15,7 +15,7 @@ BLOCKED_CHARS = [
     "]",   # Direct indexing / bracket notation
 ]
 
-# Layer 2: Keyword filter (introspection & smuggling keywords)
+# Layer 2: Keyword filter
 BLOCKED_KEYWORDS = [
     "class",       # Class introspection
     "mro",         # Method resolution order
@@ -39,7 +39,7 @@ BLOCKED_KEYWORDS = [
     "session",     # Session object
 ]
 
-# Layer 3: Military telegraph transmission length limit
+# Layer 3: Telegraph dispatch length limit
 MAX_DISPATCH_LENGTH = 350
 
 TEMPLATE_PAGE = """
@@ -47,51 +47,307 @@ TEMPLATE_PAGE = """
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <title>Regio Esercito Italiano - Console Telegrafica Campale</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Regio Esercito Italiano &bull; Console Telegrafica di Sauria</title>
   <style>
-    body { background-color: #1c2321; color: #e0e2db; font-family: 'Courier New', monospace; padding: 25px; }
-    .terminal { max-width: 850px; margin: 0 auto; background: #0b0f0e; border: 2px solid #5e6572; border-radius: 6px; padding: 25px; box-shadow: 0 0 20px rgba(0,0,0,0.8); }
-    h1 { color: #d4a373; font-size: 20px; border-bottom: 1px dashed #5e6572; padding-bottom: 10px; }
-    .rules-box { background: #131d19; border: 1px solid #3d5a45; padding: 12px; border-radius: 4px; margin-bottom: 15px; font-size: 12px; color: #a3b18a; }
-    .waf-alert { background: #5c1d1d; color: #ffcccc; padding: 12px; border: 1px solid #ff4d4d; border-radius: 4px; margin-bottom: 20px; font-weight: bold; }
-    textarea { width: 100%; height: 120px; background: #18231f; color: #a3b18a; border: 1px solid #5e6572; border-radius: 4px; padding: 10px; font-family: monospace; font-size: 14px; box-sizing: border-box; }
-    button { background: #d4a373; color: #0b0f0e; border: none; padding: 10px 20px; font-weight: bold; margin-top: 10px; cursor: pointer; border-radius: 4px; }
-    button:hover { background: #faedcd; }
-    .dispatch-view { margin-top: 25px; padding: 15px; background: #141f1b; border-left: 4px solid #d4a373; border-radius: 2px; }
-    .stamp { font-size: 11px; color: #7f9183; margin-top: 20px; }
+    :root {
+      --bg-dark: #0f1412;
+      --panel-bg: #151d1a;
+      --brass: #c89f56;
+      --brass-bright: #e5be78;
+      --brass-dark: #8c6a30;
+      --ink: #e0e4dc;
+      --border: #2e3d36;
+      --alert-bg: #4a1515;
+      --alert-border: #d93838;
+      --alert-text: #ffd6d6;
+      --telegram-paper: #e9e2ce;
+      --telegram-ink: #161e1b;
+      --status-green: #4ade80;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(ellipse at top, #1b2823 0%, #0d1210 70%),
+        repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.25) 2px, rgba(0, 0, 0, 0.25) 4px);
+      color: var(--ink);
+      font-family: 'Courier New', Courier, monospace;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 30px 15px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 860px;
+      background: var(--panel-bg);
+      border: 2px solid var(--brass-dark);
+      border-radius: 8px;
+      box-shadow: 
+        0 0 0 1px #050807,
+        0 15px 40px rgba(0, 0, 0, 0.85),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .header-bar {
+      background: linear-gradient(180deg, #1f2c26 0%, #17211d 100%);
+      border-bottom: 2px solid var(--brass-dark);
+      padding: 14px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      letter-spacing: 1px;
+      color: #9cb0a4;
+    }
+
+    .status-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--status-green);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--status-green);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 0.7; }
+      50% { opacity: 1; filter: drop-shadow(0 0 6px var(--status-green)); }
+      100% { opacity: 0.7; }
+    }
+
+    .main-body {
+      padding: 30px;
+    }
+
+    .title-section {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 18px;
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      font-size: 20px;
+      color: var(--brass-bright);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      font-weight: bold;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    }
+
+    .subtitle {
+      font-size: 12px;
+      color: #8fa196;
+      margin-top: 6px;
+      letter-spacing: 0.5px;
+    }
+
+    .amharic-tag {
+      color: var(--brass);
+      font-weight: bold;
+    }
+
+    .alert-banner {
+      background: var(--alert-bg);
+      border: 1px solid var(--alert-border);
+      border-left: 5px solid var(--alert-border);
+      color: var(--alert-text);
+      padding: 14px 18px;
+      border-radius: 4px;
+      margin-bottom: 24px;
+      font-size: 13px;
+      line-height: 1.4;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    }
+
+    .form-group {
+      margin-bottom: 22px;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      color: var(--brass);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+
+    textarea {
+      width: 100%;
+      height: 120px;
+      background: #0d1210;
+      color: #b8c7be;
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      padding: 14px;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 14px;
+      line-height: 1.5;
+      resize: vertical;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: var(--brass);
+      box-shadow: 0 0 10px rgba(200, 159, 86, 0.2);
+    }
+
+    .action-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 15px;
+    }
+
+    button {
+      background: linear-gradient(180deg, var(--brass-bright) 0%, var(--brass) 100%);
+      color: #0b0f0d;
+      border: 1px solid #e5be78;
+      border-radius: 4px;
+      padding: 12px 28px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.4);
+      transition: all 0.2s;
+    }
+
+    button:hover {
+      background: linear-gradient(180deg, #f0cf90 0%, var(--brass-bright) 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(200, 159, 86, 0.35);
+    }
+
+    button:active {
+      transform: translateY(1px);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.6);
+    }
+
+    .telegram-dispatch {
+      margin-top: 30px;
+      background: var(--telegram-paper);
+      color: var(--telegram-ink);
+      border: 1px solid #baa984;
+      border-radius: 4px;
+      padding: 22px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+      position: relative;
+    }
+
+    .telegram-dispatch::before {
+      content: "TELEGRAMMA UFFICIALE &bull; STATO MAGGIORE";
+      display: block;
+      font-size: 10px;
+      font-weight: bold;
+      letter-spacing: 2px;
+      color: #61553c;
+      border-bottom: 2px solid #61553c;
+      padding-bottom: 8px;
+      margin-bottom: 14px;
+    }
+
+    .telegram-content {
+      font-size: 15px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-weight: 600;
+    }
+
+    .telegram-footer {
+      margin-top: 16px;
+      padding-top: 10px;
+      border-top: 1px dashed #baa984;
+      font-size: 10px;
+      color: #7d6e50;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .footer-stamp {
+      background: #0f1412;
+      border-top: 1px solid var(--border);
+      padding: 14px 24px;
+      font-size: 10px;
+      color: #6a7c72;
+      text-align: center;
+      letter-spacing: 1px;
+    }
   </style>
 </head>
 <body>
-  <div class="terminal">
-    <h1>TELEGRAFO MILITARE - QUARTIER GENERALE DI SAURIA (ADUA 1896)</h1>
-    <p>Tenente Generale Oreste Baratieri &bull; Modulo Ordini Operativi Campali [የባራቲየሪ ድንብርብር]</p>
-
-    <div class="rules-box">
-      <strong>NORME DI SICUREZZA TELEGRAFICA CAMPALE:</strong><br>
-      &bull; Canale analogico monofrequenza: vietati caratteri speciali (<strong>.</strong>, <strong>_</strong>, <strong>[</strong>, <strong>]</strong>).<br>
-      &bull; Divieto di canali di contrabbando (nessun parametro URL o intestazioni ausiliarie).<br>
-      &bull; Lunghezza massima dispaccio: 350 caratteri.
+  <div class="container">
+    <div class="header-bar">
+      <div class="status-indicator">
+        <span class="status-dot"></span>
+        <span>LINEA DI TRASMISSIONE SAURIA &bull; ADUA</span>
+      </div>
+      <div>29 FEBBRAIO 1896 &bull; ORE 23:45</div>
     </div>
 
-    {% if alert %}
-      <div class="waf-alert">⚠️ ERRORE SICUREZZA: Tentativo di sabotaggio rilevato! Motivo: '{{ alert }}'</div>
-    {% endif %}
-
-    <form method="POST" action="/">
-      <label for="memo">Bozza Ordine del Giorno / Rapporto di Marcia:</label><br>
-      <textarea id="memo" name="memo" placeholder="Inserire messaggio telegrafico (es: Avanzata Colonna Albertone ore 04:00)...">{{ raw_input }}</textarea><br>
-      <button type="submit">Trasmetti Dispaccio Telegrafico</button>
-    </form>
-
-    {% if rendered_output is not none %}
-      <div class="dispatch-view">
-        <strong>DISPACCIO TRASMESSO AGLI UFFICIALI DI BRIGATA:</strong>
-        <pre>{{ rendered_output }}</pre>
+    <div class="main-body">
+      <div class="title-section">
+        <h1>Console Telegrafica Campale</h1>
+        <div class="subtitle">
+          Quartier Generale di Sauria &bull; Tenente Generale Oreste Baratieri 
+          <span class="amharic-tag">[የባራቲየሪ ድንብርብር]</span>
+        </div>
       </div>
-    {% endif %}
 
-    <div class="stamp">
-      SISTEMA DI CIFRATURA AUTOMATICA - STATO MAGGIORE DEL REGIO CORPO TRUPPE COLONIALI
+      {% if alert %}
+        <div class="alert-banner">
+          <span>⚠️</span>
+          <span><strong>ERRORE TRASMISSIONE:</strong> {{ alert }}</span>
+        </div>
+      {% endif %}
+
+      <form method="POST" action="/">
+        <div class="form-group">
+          <label for="memo">Bozza Ordine del Giorno / Rapporto Operativo:</label>
+          <textarea id="memo" name="memo" placeholder="Comporre dispaccio per le brigate (es. Avanzata Colonna Albertone ore 04:00 verso il colle di Kidane Mehret)...">{{ raw_input }}</textarea>
+        </div>
+
+        <div class="action-row">
+          <button type="submit">Trasmetti Dispaccio Telegrafico</button>
+        </div>
+      </form>
+
+      {% if rendered_output is not none %}
+        <div class="telegram-dispatch">
+          <div class="telegram-content">{{ rendered_output }}</div>
+          <div class="telegram-footer">
+            <span>REGIO CORPO TRUPPE COLONIALI</span>
+            <span>RICEVUTO E ARCHIVIATO AI POSTI DI BRIGATA</span>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="footer-stamp">
+      SEZIONE TELEGRAFICA MILITARE &bull; CIFRARIO RISERVATO DEL COMANDO SUPREMO D'AFRICA
     </div>
   </div>
 </body>
@@ -101,27 +357,27 @@ TEMPLATE_PAGE = """
 def inspect_request_security():
     # Layer 4: Smuggling & parameter injection prevention
     if len(request.args) > 0:
-        return "Parametri URL non autorizzati nella linea di trasmissione"
+        return "Canale di trasmissione compromesso (parametri URL non autorizzati)"
     for k in request.form.keys():
         if k != "memo":
-            return f"Campo modulo imprevisto: '{k}'"
+            return "Segnale telegrafico anomalo (campi modulo non riconosciuti)"
     return None
 
 def waf_check(user_text: str):
     # Length check
     if len(user_text) > MAX_DISPATCH_LENGTH:
-        return f"Dispaccio troppo lungo ({len(user_text)} car.). Limite consentito: {MAX_DISPATCH_LENGTH} caratteri"
+        return "Capacità massima della linea telegrafica campale superata"
 
     # Character check
     for ch in BLOCKED_CHARS:
         if ch in user_text:
-            return f"Carattere vietato: '{ch}'"
+            return "Interferenza di linea: carattere non ammesso dal protocollo telegrafico"
 
     # Keyword check
     lower_text = user_text.lower()
     for kw in BLOCKED_KEYWORDS:
         if kw in lower_text:
-            return f"Termine proibito: '{kw}'"
+            return "Censura militare: termine non ammesso negli ordini di brigata"
 
     return None
 
@@ -145,7 +401,7 @@ def index():
                 try:
                     rendered_output = render_template_string(raw_input)
                 except Exception as e:
-                    rendered_output = f"[Errore di formattazione telegrafica: {e}]"
+                    rendered_output = f"[Errore linea telegrafica: {e}]"
 
     return render_template_string(TEMPLATE_PAGE, rendered_output=rendered_output, alert=alert, raw_input=raw_input)
 
