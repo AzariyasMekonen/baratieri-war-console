@@ -41,7 +41,7 @@ TEMPLATE_PAGE = """
 <body>
   <div class="terminal">
     <h1>TELEGRAFO MILITARE - QUARTIER GENERALE DI SAURIA (ADUA 1896)</h1>
-    <p>Tenente Generale Oreste Baratieri &bull; Modulo Ordini Operativi Campali</p>
+    <p>Tenente Generale Oreste Baratieri &bull; Modulo Ordini Operativi Campali [የባራቲየሪ ድንብርብር]</p>
 
     {% if alert %}
       <div class="waf-alert">⚠️ ERRORE SICUREZZA: Tentativo di sabotaggio rilevato! Parola chiave vietata: '{{ alert }}'</div>

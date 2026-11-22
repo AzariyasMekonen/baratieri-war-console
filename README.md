@@ -1,4 +1,4 @@
-# Baratieri's War Council Console
+# Baratieri's War Council Console (የባራቲየሪ ድንብርብር)
 
 **Category:** Web Exploitation  
 **Difficulty:** Hard (1000 points)  
