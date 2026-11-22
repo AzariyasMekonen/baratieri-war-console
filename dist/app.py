@@ -48,7 +48,7 @@ TEMPLATE_PAGE = """
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Regio Esercito Italiano &bull; ዋይ ዋይ</title>
+  <title>Regio Esercito Italiano &bull; Console Telegrafica Campale</title>
   <style>
     :root {
       --bg-dark: #0f1412;
@@ -310,9 +310,9 @@ TEMPLATE_PAGE = """
 
     <div class="main-body">
       <div class="title-section">
-        <h1>ዋይ ዋይ</h1>
+        <h1>Console Telegrafica Campale</h1>
         <div class="subtitle">
-          Console Telegrafica Campale &bull; Quartier Generale di Sauria &bull; Tenente Generale Oreste Baratieri
+          Quartier Generale di Sauria &bull; Tenente Generale Oreste Baratieri
         </div>
       </div>
 
