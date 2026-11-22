@@ -30,7 +30,7 @@ connection_type: "http"
 internal_port: 5001
 connection_info: "http://{host}:{port}"
 hints:
-  - content: "Template engines offer native operators to stitch strings together before looking up object attributes dynamically."
-    cost: 45
+  - content: "When direct dots, brackets, and underscores are stripped, native template filters (such as batch, first, and last) combined with string representations can synthesize prohibited characters dynamically."
+    cost: 50
 state: visible
 version: "0.2"
